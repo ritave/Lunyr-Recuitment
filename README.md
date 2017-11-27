@@ -2,33 +2,26 @@
 
 ## What is this
 This is a solution to the Solidty recruitment challenge posed by Lunyr.
-The initial challenge can be found in the `Challenge.sol` file, while the 
-solution exists in `contracts/Shareholders.sol`. The goal was to fix the bugs,
-security mistakes and generally explain what the Smart-Contract ought to do.
+The initial challenge can be found in the `Challenge.sol` file.
+The goal was to fix the bugs, security mistakes and generally explain what the Smart-Contract ought to do.
 
-I've decided that the best way to achieve this task is to, alongside with git log,
-is to keep a journal of my decisions and their explanations in this README.
+## Improvement
+Additionally I thought it would be fun to make the contract actually useful in real world.
+I've modified it so now it's a basic dividend ledger.
 
-## Explanation
-The contract is supposed to be a dividend account. People can send Ether to the contract
-for a chance to become shareholders. The owner can then manually accept the senders to become
-shareholders and get a part of a dividend.
-
-Right now though, the contract does nothing useful, people send Ether, and when `dispense()`
-is called, the only thing that happens is their shares are zeroed out back to them.
-
-I understand that maybe the challenge is supposed to be doing nothing useful, but 
-underpromise and overdeliver right? I'm making this contract actally useful in real life.
-So after my changes the process works so:
+So after my changes the process works as so:
 * The owner approves a shareholder
 * Shareholder can send their own funds to get shares
 * Owner can withdraw those funds
 * Owner can dispense dividends to the shareholders
 * Each shareholder gets a weighed amount of dividend based on their amount of shares
+
 Further improvements would be:
 * Make this an ERC20 token, so that the shares can be sold.
 * Add a `removeShareholder` function
 * Use some kind of SafeMath library for overflows
+
+I've documented all detected bugs and then iteration decisions in the Journal included in this README.
 
 ## Running
 All the commands are found as npm scripts. The minimum to run tests would be:
@@ -49,7 +42,6 @@ All the commands are found as npm scripts. The minimum to run tests would be:
 5. Extracted Ownable logic into own SC
   * Also a bug with `owner` checking, `tx.origin` is the whole transaction caller, while
     the `msg.sender` is the last in chain of smart-contracts calls
-  * Added tests
 6. Fix indentation
 7. The loop iterator has a `var` declaration which is `uint8` and not `uint`
 8. The error from `send` wasn't checked in `dispense()`
@@ -66,5 +58,8 @@ All the commands are found as npm scripts. The minimum to run tests would be:
   * Made a struct holding all the information concerning the shareholder
   * Seperated `withdraw()` into `withdraw()` and `withdrawInvestments()`
 15. Default function destroys previous shares of the owner, instead of adding to them
+16. Default function also does too much work and most of the time might run out of gas
+  * I've removed the `dispense()` function, it's role now does the default function
+  * I've added a `invest()` function for the shareholders
 
 Cheers 🍸 from Olaf Tomalka <olaf@tomalka.me>

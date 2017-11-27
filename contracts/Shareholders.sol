@@ -11,17 +11,12 @@ contract Shareholders is Ownable {
   mapping(address => Shareholder) shareholders;
 
   modifier onlyShareholder {
-    require(shareholders[msg.sender].isAccepted);
+    require(isShareholder(msg.sender));
     _;
   }
 
-  function () onlyShareholder payable public {
-    Shareholder memory holder = shareholders[msg.sender];
-    claimDividends(holder);
-
-    totalShares += msg.value;
-    waitingInvestments += msg.value;
-    holder.etherShares += msg.value;
+  function () payable public {
+    sumDividends += msg.value;
   }
 
   function addShareholder(address shareholder) onlyOwner public {
@@ -46,11 +41,23 @@ contract Shareholders is Ownable {
     msg.sender.transfer(value);
   }
 
-  function dispense() onlyOwner payable public {
-    sumDividends += msg.value;
+  function invest() onlyShareholder payable public {
+    Shareholder memory holder = shareholders[msg.sender];
+    claimDividends(holder);
+
+    totalShares += msg.value;
+    waitingInvestments += msg.value;
+    holder.etherShares += msg.value;
+  }
+
+  function isShareholder(address who) public view returns (bool) {
+    return shareholders[who].isAccepted;
   }
 
   function claimDividends(Shareholder memory holder) view private {
+    if (totalShares == 0)
+      return;
+
     uint unclaimedDividends = holder.etherShares * (sumDividends-holder.lastDividends) / totalShares;
 
     holder.lastDividends = sumDividends;
