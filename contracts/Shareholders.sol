@@ -1,54 +1,67 @@
-pragma solidity ^0.4.9;
+pragma solidity ^0.4.13;
 
-// This document is part of the Lunyr coding challenge. If you would like to participate
-// please email support át lunyr döt cōm with a description of any bugs you find in this contract
-// including what the function should do, what it actually does, what are the consequences
-// of the bug (how to abuse it), and how to fix it. Happy Hacking
-// RTFM: https://solidity.readthedocs.io/en/develop/
+import "./Ownable.sol";
 
-// (ʘ‿ʘ)(ʘ‿ʘ)(ʘ‿ʘ)
+contract Shareholders is Ownable {
+  event FailedSend(address shareholder, uint value);
 
-// THIS CONTRACT CONTAINS BUGS - DO NOT USE
-contract InsecureAndMessy {
+  uint totalShares;
+  uint waitingInvestments;
+  uint sumDividends; 
+  mapping(address => Shareholder) shareholders;
 
+  modifier onlyShareholder {
+    require(shareholders[msg.sender].isAccepted);
+    _;
+  }
 
-   /// Mapping of ether shares of the contract.
-   mapping(address => uint) shares;
-   address owner;
-   address[] shareholders;
-   event FailedSend(address, uint);
+  function () onlyShareholder payable public {
+    Shareholder memory holder = shareholders[msg.sender];
+    claimDividends(holder);
 
-   function InseceureAndMessy()  public {
-      owner = msg.sender;
-   }
+    totalShares += msg.value;
+    waitingInvestments += msg.value;
+    holder.etherShares += msg.value;
+  }
 
-   function () payable  public {
-      shares[msg.sender] = msg.value;
-   }
+  function addShareholder(address shareholder) onlyOwner public {
+    shareholders[shareholder].isAccepted = true;
+  }
 
-   function addShareholder(address shareholder)  public {
-      require(tx.origin == owner);
-      shareholders.push(shareholder);
-   }
+  function withdraw() onlyShareholder public {
+    Shareholder memory holder = shareholders[msg.sender];
+    claimDividends(holder);
 
-   /// Withdraw your share.
-   function withdraw()  public {
-     if (msg.sender.send(shares[msg.sender])) {
-         shares[msg.sender] = 0;
-      } else {
-         FailedSend(msg.sender, shares[msg.sender]);
-      }
-   }
+    uint value = holder.dividendsWaiting;
+    holder.dividendsWaiting = 0;
+    if (!msg.sender.send(value)) {
+      holder.dividendsWaiting = value;
+      FailedSend(msg.sender, value);
+    }
+  }
 
-   function dispense()  public {
-      require(msg.sender == owner);
-      address shareholder;
-      for (var i = 0; i < shareholders.length; i++) {
-         shareholder = shareholders[i];
-         uint sh = shares[shareholder];
-         shares[shareholder] = 0;
-         shareholder.send(sh);
-      }
-   }
+  function withdrawInvestments() onlyOwner public {
+    uint value = waitingInvestments;
+    waitingInvestments = 0;
+    msg.sender.transfer(value);
+  }
 
+  function dispense() onlyOwner payable public {
+    sumDividends += msg.value;
+  }
+
+  function claimDividends(Shareholder memory holder) view private {
+    uint unclaimedDividends = holder.etherShares * (sumDividends-holder.lastDividends) / totalShares;
+
+    holder.lastDividends = sumDividends;
+    holder.dividendsWaiting += unclaimedDividends;
+  }
+
+  struct Shareholder {
+    bool isAccepted;
+    uint etherShares;
+
+    uint lastDividends;
+    uint dividendsWaiting;
+  }
 }
