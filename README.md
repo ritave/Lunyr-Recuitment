@@ -31,7 +31,7 @@ All the commands are found as npm scripts. The minimum to run tests would be:
 
 ## Journal
 1. Decided to use Truffle for compilation and testing
-  * Preferably I would use somehting lighter for this task,
+  * Preferably I would use something lighter for this task,
     but Dapple is deprecated, Dapp is not yet ready and Embark
     is even bigger than Truffle
   * TODO: Create my own open-source light skeleton for Smart-Contract
