@@ -1,0 +1,19 @@
+{
+  "name": "lunyr-recruiting",
+  "version": "1.0.0",
+  "description": "A recruitment solution for the Lunyr team",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "npm run solium -- -d contracts/",
+    "solium": "solium",
+    "truffle": "truffle",
+    "ganache-cli": "ganache-cli"
+  },
+  "author": "Olaf Tomalka",
+  "license": "ISC",
+  "devDependencies": {
+    "ganache-cli": "^6.0.3",
+    "solium": "^1.0.7",
+    "truffle": "^4.0.1"
+  }
+}
