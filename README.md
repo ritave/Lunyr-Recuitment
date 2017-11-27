@@ -30,36 +30,36 @@ All the commands are found as npm scripts. The minimum to run tests would be:
     npm run test
 
 ## Journal
-1. Decided to use Truffle for compilation and testing
-  1. Preferably I would use something lighter for this task,
+* Decided to use Truffle for compilation and testing
+  * Preferably I would use something lighter for this task,
     but Dapple is deprecated, Dapp is not yet ready and Embark
     is even bigger than Truffle
-  2. TODO: Create my own open-source light skeleton for Smart-Contract
+  * TODO: Create my own open-source light skeleton for Smart-Contract
     development?
-2. Installed Solium for automatic security and linting detection
-3. Added .editorconfig for your IDE rule standarization
-4. Renamed the contract to something more appropriate (also a typo in constructor)
-5. Extracted Ownable logic into own SC
-  1. Also a bug with `owner` checking, `tx.origin` is the whole transaction caller, while
+* Installed Solium for automatic security and linting detection
+* Added .editorconfig for your IDE rule standarization
+* Renamed the contract to something more appropriate (also a typo in constructor)
+* Extracted Ownable logic into own SC
+  * Also a bug with `owner` checking, `tx.origin` is the whole transaction caller, while
     the `msg.sender` is the last in chain of smart-contracts calls
-6. Fix indentation
-7. The loop iterator has a `var` declaration which is `uint8` and not `uint`
-8. The error from `send` wasn't checked in `dispense()`
-  1. Upgraded the solidity version to `0.4.13` and used `transfer`
-9. `withdraw()` has a reentrancy attack bug
-  1. Zero out the value before withdraw
-10. `dispense()` just zeros-out shares, I expect it was supposed to send a dividend
-  1. Made it `payable` and redistribute the funds input by the owner
-  2. NOTE: Why make it owner only? Might as well give anyone abillity to donate funds
-11. Added names to the `FailedSend` event
-  1. Makes it easier to understand for the next developer
-12. A loop in `dispense()` is a bad idea due to gas limits as well as nothing happenig when
-    a send fails, moving the whole infrastructure to pull instead of push sends.
-  1. Made a struct holding all the information concerning the shareholder
-  2. Seperated `withdraw()` into `withdraw()` and `withdrawInvestments()`
-13. Default function destroys previous shares of the owner, instead of adding to them
-14. Default function also does too much work and most of the time might run out of gas
-  1. I've removed the `dispense()` function, it's role now does the default function
-  2. I've added a `invest()` function for the shareholders
+* Fix indentation
+* The loop iterator has a `var` declaration which is `uint8` and not `uint`
+* The error from `send` wasn't checked in `dispense()`
+  * Upgraded the solidity version to `0.4.13` and used `transfer`
+* `withdraw()` has a reentrancy attack bug
+  * Zero out the value before withdraw
+* `dispense()` just zeros-out shares, I expect it was supposed to send a dividend
+  * Made it `payable` and redistribute the funds input by the owner
+  * NOTE: Why make it owner only? Might as well give anyone abillity to donate funds
+* Added names to the `FailedSend` event
+  * Makes it easier to understand for the next developer
+* A loop in `dispense()` is a bad idea due to gas limits as well as nothing happenig when
+  a send fails, moving the whole infrastructure to pull instead of push sends.
+  * Made a struct holding all the information concerning the shareholder
+  * Seperated `withdraw()` into `withdraw()` and `withdrawInvestments()`
+* Default function destroys previous shares of the owner, instead of adding to them
+* Default function also does too much work and most of the time might run out of gas
+  * I've removed the `dispense()` function, it's role now does the default function
+  * I've added a `invest()` function for the shareholders
 
 Cheers 🍸 from Olaf Tomalka <olaf@tomalka.me>
